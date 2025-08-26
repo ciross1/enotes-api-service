@@ -8,7 +8,7 @@ public class EnotesApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(EnotesApplication.class, args);
-		System.out.println("hellooooo");
+		System.out.println("helloooooo");
 	}
 
 }
