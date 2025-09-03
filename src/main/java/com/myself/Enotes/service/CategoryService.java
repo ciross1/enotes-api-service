@@ -2,6 +2,7 @@ package com.myself.Enotes.service;
 
 import com.myself.Enotes.dto.CategoryDto;
 import com.myself.Enotes.dto.CategoryResponse;
+import com.myself.Enotes.exception.ResourceNotFoundException;
 import com.myself.Enotes.model.Category;
 import com.myself.Enotes.repository.CategoryRepository;
 import com.myself.Enotes.serviceInterface.CategoryServiceInterface;
@@ -103,15 +104,14 @@ public class CategoryService implements CategoryServiceInterface {
     }
 
     @Override
-    public CategoryDto getCategoryById(Integer id) {
-        Optional<Category> findByCategory = categoryRepository.findByIdAndIsDeletedFalse(id);
+    public CategoryDto getCategoryById(Integer id) throws ResourceNotFoundException {
+        Category findCategoryByiD = categoryRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not founddddd with id:"+id));
 
-        if(findByCategory.isPresent()){
-            Category category = findByCategory.get();
-
+        if(!ObjectUtils.isEmpty(findCategoryByiD)){
             // Der Mapper kopiert die Werte von der Quellklasse
             // (Category) in die Zielklasse (CategoryDto).
-            return mapper.map(category, CategoryDto.class);
+            return mapper.map(findCategoryByiD, CategoryDto.class);
         }
         return null;
     }

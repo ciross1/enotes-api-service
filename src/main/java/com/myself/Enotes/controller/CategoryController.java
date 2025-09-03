@@ -2,6 +2,7 @@ package com.myself.Enotes.controller;
 
 import com.myself.Enotes.dto.CategoryDto;
 import com.myself.Enotes.dto.CategoryResponse;
+import com.myself.Enotes.exception.ResourceNotFoundException;
 import com.myself.Enotes.model.Category;
 import com.myself.Enotes.service.CategoryService;
 import jakarta.servlet.http.HttpSession;
@@ -35,6 +36,9 @@ public class CategoryController {
 
     @GetMapping("/show-category")
     public ResponseEntity<?> getAllCategory() {
+        String nm = null;
+        nm.toUpperCase();
+
         List<CategoryDto> allCategory = categoryService.getAllCategory();
         if (CollectionUtils.isEmpty(allCategory)) {
             return ResponseEntity.noContent().build();
@@ -54,7 +58,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?>getCategoryDetailsById(@PathVariable  Integer id){
+    public ResponseEntity<?>getCategoryDetailsById(@PathVariable  Integer id) throws ResourceNotFoundException {
         CategoryDto categoryDto = categoryService.getCategoryById(id);
         if(ObjectUtils.isEmpty(categoryDto)){
             return new ResponseEntity<>("Category not found with id=" + id, HttpStatus.NOT_FOUND);
