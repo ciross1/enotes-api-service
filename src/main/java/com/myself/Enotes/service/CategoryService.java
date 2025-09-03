@@ -12,6 +12,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoryService implements CategoryServiceInterface {
@@ -56,7 +57,7 @@ public class CategoryService implements CategoryServiceInterface {
     @Override
     public List<CategoryDto> getAllCategory() {
 
-        List<Category> categories = categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findByIsDeletedFalse();
 
             List<CategoryDto> categoryDtoList =
                     categories.stream().map(cat ->mapper.map(cat, CategoryDto.class)).toList();
@@ -78,11 +79,43 @@ public class CategoryService implements CategoryServiceInterface {
     @Override
     public List<CategoryResponse> getActiveCategory() {
 
-        List<Category> categories = categoryRepository.findByIsActiveTrue();
+        List<Category> categories = categoryRepository.findByIsActiveTrueAndIsDeletedFalse();
 
         List<CategoryResponse> categoryList =
                 categories.stream().map(cat->mapper.map(cat, CategoryResponse.class)).toList();
 
         return categoryList;
     }
+
+    @Override
+    public CategoryDto getCategoryById(Integer id) {
+        Optional<Category> findByCategory = categoryRepository.findByIdAndIsDeletedFalse(id);
+
+        if(findByCategory.isPresent()){
+            Category category = findByCategory.get();
+
+            // Der Mapper kopiert die Werte von der Quellklasse
+            // (Category) in die Zielklasse (CategoryDto).
+            return mapper.map(category, CategoryDto.class);
+        }
+        return null;
+    }
+
+    @Override
+    public Boolean deleteCategory(Integer id) {
+
+        Optional<Category> findByCategory = categoryRepository.findById(id);
+
+        if(findByCategory.isPresent()){
+            Category category = findByCategory.get();
+            category.setIsDeleted(true);
+            categoryRepository.save(category);
+
+            return true;
+
+        }
+        return false;
+    }
+
+
 }
