@@ -39,20 +39,35 @@ public class CategoryService implements CategoryServiceInterface {
         //Er erkennt, dass sie in beiden Klassen vorkommen
         //Er kopiert die Werte vom CategoryDto ins neue Category-Objekt.
 
-       Category category=  mapper.map(categoryDto, Category.class);
-
-
-        category.setIsDeleted(false);
-        category.setCreatedBy(1);
-        category.setCreatedOn(new Date());
-
-        Category saveCategory = categoryRepository.save(category);
-        if(ObjectUtils.isEmpty(saveCategory)){
-            return false;
+        if(categoryDto.getId() == null){
+            // Neues Objekt
+            Category category = mapper.map(categoryDto, Category.class);
+            category.setIsDeleted(false);
+            category.setCreatedBy(1);
+            category.setCreatedOn(new Date());
+            categoryRepository.save(category);
+            return true;
+        } else {
+            // Update
+            Optional<Category> existing = categoryRepository.findById(categoryDto.getId());
+            if(existing.isPresent()){
+                Category category = existing.get();
+                category.setName(categoryDto.getName());
+                category.setDescription(categoryDto.getDescription());
+                category.setIsActive(categoryDto.getIsActive());
+                category.setUpdatedBy(1);
+                category.setUpdatedOn(new Date());
+                categoryRepository.save(category);
+                return true;
+            } else {
+                // Optional: falls ID nicht existiert
+                return false;
+            }
         }
 
-        return true;
     }
+
+
 
     @Override
     public List<CategoryDto> getAllCategory() {
@@ -115,6 +130,20 @@ public class CategoryService implements CategoryServiceInterface {
 
         }
         return false;
+    }
+
+    @Override
+    public Boolean deleteCompleted(Integer id) {
+        Category categoryById = categoryRepository.findById(id).orElse(null);
+
+        if (ObjectUtils.isEmpty(categoryById)){
+            return false;
+        }
+
+         categoryRepository.delete(categoryById);
+
+        return true;
+
     }
 
 

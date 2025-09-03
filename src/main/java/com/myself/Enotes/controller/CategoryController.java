@@ -72,4 +72,16 @@ public class CategoryController {
         return new ResponseEntity<>("Category not  deleted", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+
+    @DeleteMapping("delete-complete/{id}")
+    public ResponseEntity<?>deleteCompletelyById(@PathVariable Integer id){
+        Boolean deleted = categoryService.deleteCompleted(id);
+
+                if(deleted){
+                    return new ResponseEntity<>("Category deleted completely SUCCESS=" + id, HttpStatus.OK);
+                }
+
+        return new ResponseEntity<>("Category not  deleted", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }
