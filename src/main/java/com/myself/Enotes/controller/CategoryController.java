@@ -5,7 +5,9 @@ import com.myself.Enotes.dto.CategoryResponse;
 import com.myself.Enotes.exception.ResourceNotFoundException;
 import com.myself.Enotes.model.Category;
 import com.myself.Enotes.service.CategoryService;
+import com.myself.Enotes.util.Validation;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -23,8 +25,16 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private Validation validation;
+
     @PostMapping("/save-category")
     public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto){
+
+        //Validation checking
+        validation.categoryValidation(categoryDto);
+
+
         Boolean saveCategory = categoryService.saveCategory(categoryDto);
         if(saveCategory){
             return new ResponseEntity<>("saved", HttpStatus.CREATED);
